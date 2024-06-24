@@ -115,6 +115,7 @@ def load_partition(dataset, validation_split, batch_size):
        'delta_STEP','sex', 'age', 'place_Unknown', 'place_hallway',
        'place_other', 'place_ward']
     data = num_data(data)
+
     # Apply the function
     data = split_data_by_week(data)
     patient_ids = data['이름'].unique()
@@ -149,7 +150,7 @@ def gl_model_torch_validation(batch_size):
     """
     Setting up a dataset to evaluate a global model on the server
     """
-    file_path ='./dataset/safer_dong.csv'
+    file_path ='./safer_dong.csv'
     data = pd.read_csv(file_path)
     data = data.replace({'False': '0', 'True': '1'})
     # One-hot encoding for 'place' column
