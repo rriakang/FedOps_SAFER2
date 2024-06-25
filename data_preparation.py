@@ -99,12 +99,12 @@ def load_partition(dataset, validation_split, batch_size):
     """
     The variables train_loader, val_loader, and test_loader must be returned fixedly.
     """
-    file_path ='./safer_dong.csv'
+    file_path ='./safer_yong.csv'
     data = pd.read_csv(file_path)
     data = data.replace({'False': '0', 'True': '1'})
     # One-hot encoding for 'place' column
     data = pd.get_dummies(data, columns=['place'])
-    data = data.drop(columns="index")
+
     # Converting targetTime to datetime
     data['targetTime'] = pd.to_datetime(data['targetTime'])
     seq_cols = ['Daily_Entropy', 'Normalized_Daily_Entropy', 'Eight_Hour_Entropy',
@@ -154,12 +154,12 @@ def gl_model_torch_validation(batch_size):
     """
     Setting up a dataset to evaluate a global model on the server
     """
-    file_path ='./safer_dong.csv'
+    file_path ='./safer_yong.csv'
     data = pd.read_csv(file_path)
     data = data.replace({'False': '0', 'True': '1'})
     # One-hot encoding for 'place' column
     data = pd.get_dummies(data, columns=['place'])
-    data = data.drop(columns="index")
+
     # Converting targetTime to datetime
     data['targetTime'] = pd.to_datetime(data['targetTime' ])
     seq_cols = ['Daily_Entropy', 'Normalized_Daily_Entropy', 'Eight_Hour_Entropy',
