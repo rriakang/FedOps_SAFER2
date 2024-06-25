@@ -68,12 +68,7 @@ def train_torch():
             val_loss /= len(val_loader)
             print(f'Epoch {epoch+1}/{epochs}, Validation Loss: {val_loss:.4f}')
 
-            # Save the best model
-            if val_loss < best_val_loss:
-                best_val_loss = val_loss
-                best_model = model.state_dict()
-
-            model.load_state_dict(best_model)
+            
         return model
 
     return custom_train_torch

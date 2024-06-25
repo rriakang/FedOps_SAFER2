@@ -163,6 +163,7 @@ def async_dec(awaitable_func):
 #                            'Device_mac': manager.client_mac,
 #                            'Device_hostname': manager.client_name,
 #                            'Device_online': manager.client_online,
+
 #                            'Device_training': manager.client_training,
 #                        }))
 
