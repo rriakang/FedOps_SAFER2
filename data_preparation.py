@@ -192,6 +192,7 @@ def gl_model_torch_validation(batch_size):
     
     X_train_tensor, y_train_tensor = convert_results_to_tensors(train_results)
     X_test_tensor, y_test_tensor = convert_results_to_tensors(test_results)
+    
     train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
     train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
     test_dataset = TensorDataset(X_test_tensor, y_test_tensor)
