@@ -28,14 +28,16 @@ def transform_target(df):
     return df
 
 
-# 패딩 함수
-def pad_sequence(id_df, max_length, seq_cols):
-    sequence = id_df[seq_cols].values
+
+def pad_sequence(data, max_length, seq_cols):
+    sequence = data[seq_cols].values
+    if len(sequence) > max_length:
+        sequence = sequence[-max_length:]  # 데이터 길이가 max_length를 초과할 경우 뒤쪽 데이터를 자름
     num_padding = max_length - len(sequence)
     padding = np.zeros((num_padding, len(seq_cols)))
     padded_sequence = np.vstack([padding, sequence])
     return padded_sequence
-
+    
 # 주별로 모델 입력 데이터를 준비하는 함수 (타겟 컬럼 추가)
 def prepare_data_for_model_by_week(df, max_length, seq_cols, target_col):
     results = []
@@ -104,9 +106,12 @@ def load_partition(dataset, validation_split, batch_size):
     data = data.replace({'False': '0', 'True': '1'})
     # One-hot encoding for 'place' column
     data = pd.get_dummies(data, columns=['place'])
-
+    data = data.drop(columns="index")
     # Converting targetTime to datetime
     data['targetTime'] = pd.to_datetime(data['targetTime'])
+    # 'place_Unknown' 컬럼이 없으면 추가
+    if 'place_Unknown' not in data.columns:
+        data['place_Unknown'] = 0
     seq_cols = ['Daily_Entropy', 'Normalized_Daily_Entropy', 'Eight_Hour_Entropy',
        'Normalized_Eight_Hour_Entropy', 'first_TOTAL_ACCELERATION','Location_Variability',
        'last_TOTAL_ACCELERATION', 'mean_TOTAL_ACCELERATION',
@@ -115,7 +120,7 @@ def load_partition(dataset, validation_split, batch_size):
        'nunique_TOTAL_ACCELERATION', 'delta_CALORIES', 'first_HEARTBEAT', 'last_HEARTBEAT',
        'mean_HEARTBEAT', 'median_HEARTBEAT', 'max_HEARTBEAT', 'min_HEARTBEAT',
        'std_HEARTBEAT', 'nunique_HEARTBEAT', 'delta_DISTANCE', 'delta_SLEEP',
-       'delta_STEP','sex', 'age', 'place_Unknown', 'place_hallway',
+       'delta_STEP','sex', 'age', 'place_hallway',
        'place_other', 'place_ward']
     data = num_data(data)
 
@@ -159,9 +164,12 @@ def gl_model_torch_validation(batch_size):
     data = data.replace({'False': '0', 'True': '1'})
     # One-hot encoding for 'place' column
     data = pd.get_dummies(data, columns=['place'])
-
+    data = data.drop(columns="index")
     # Converting targetTime to datetime
     data['targetTime'] = pd.to_datetime(data['targetTime' ])
+    # 'place_Unknown' 컬럼이 없으면 추가
+    if 'place_Unknown' not in data.columns:
+        data['place_Unknown'] = 0
     seq_cols = ['Daily_Entropy', 'Normalized_Daily_Entropy', 'Eight_Hour_Entropy',
        'Normalized_Eight_Hour_Entropy', 'first_TOTAL_ACCELERATION','Location_Variability',
        'last_TOTAL_ACCELERATION', 'mean_TOTAL_ACCELERATION',
@@ -170,7 +178,7 @@ def gl_model_torch_validation(batch_size):
        'nunique_TOTAL_ACCELERATION', 'delta_CALORIES', 'first_HEARTBEAT', 'last_HEARTBEAT',
        'mean_HEARTBEAT', 'median_HEARTBEAT', 'max_HEARTBEAT', 'min_HEARTBEAT',
        'std_HEARTBEAT', 'nunique_HEARTBEAT', 'delta_DISTANCE', 'delta_SLEEP',
-       'delta_STEP','sex', 'age', 'place_Unknown', 'place_hallway',
+       'delta_STEP','sex', 'age', 'place_hallway',
        'place_other', 'place_ward']
     
     data = num_data(data)
