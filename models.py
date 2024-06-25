@@ -4,16 +4,17 @@ from torch import nn
 from torch import optim
 import torch.nn.functional as F
 from tqdm import tqdm 
+import numpy as np
 
 
 
 class Mental_CNNGRU(nn.Module):
-    def __init__(self, input_dim, cnn_out_channels, cnn_kernel_size, gru_hidden_dim, output_dim, dropout_prob):
+    def __init__(self, input_dim=30, cnn_out_channels=256, cnn_kernel_size=4, gru_hidden_size=64, output_size=1, dropout_prob=0.5):
         super(Mental_CNNGRU,self).__init__()
         self.conv1d = nn.Conv1d(in_channels=input_dim,out_channels=cnn_out_channels, kernel_size=cnn_kernel_size)
-        self.gru = nn.GRU(input_size=cnn_out_channels, hidden_size=gru_hidden_dim, batch_first=True)
+        self.gru = nn.GRU(input_size=cnn_out_channels, hidden_size=gru_hidden_size, batch_first=True)
         self.dropout = nn.Dropout(dropout_prob)
-        self.fc = nn.Linear(gru_hidden_dim, output_dim)
+        self.fc = nn.Linear(gru_hidden_size, output_size)
         self.activation = nn.Sigmoid()
 
     def forward(self,x) :

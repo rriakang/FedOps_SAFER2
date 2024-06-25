@@ -5,7 +5,7 @@ learning_rate: 0.0001 # Input model's learning rate
 
 model_type: 'Pytorch' # This value should be maintained
 model:
-  _target_: models. Mental_CNNGRU  #Input your custom model
+  _target_: models.Mental_CNNGRU  #Input your custom model
   output_size: 1 # Input your model's output size (only classification) 
 
 dataset:
@@ -13,7 +13,7 @@ dataset:
     validation_split: 0.2 # Ratio of dividing train data by validation
 
 # client
-task_id: 'safer_01' # Input your Task Name that you register in FedOps Website
+task_id: 'safer' # Input your Task Name that you register in FedOps Website
 
 wandb: 
   use: True # Whether to use wandb
@@ -23,9 +23,9 @@ wandb:
 
 
 # server
-num_epochs: 1 # number of local epochs
+num_epochs: 100 # number of local epochs
 batch_size: 16
-num_rounds: 2 # Number of rounds to perform
+num_rounds: 5 # Number of rounds to perform
 clients_per_round: 1 # Number of clients participating in the round
 
 server:

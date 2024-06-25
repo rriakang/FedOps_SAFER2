@@ -1,0 +1,27 @@
+random_seed: 42
+learning_rate: 0.0001
+model_type: Pytorch
+model:
+  _target_: models.Mental_CNNGRU
+  output_size: 1
+dataset:
+  name: safer_dong
+  validation_split: 0.2
+task_id: safer_01
+wandb:
+  use: true
+  key: 38f6cf3c2c37660d42ebfe8ab434b72d34be3b31
+  account: rirakang
+  project: ${dataset.name}_${task_id}
+num_epochs: 100
+batch_size: 16
+num_rounds: 5
+clients_per_round: 1
+server:
+  strategy:
+    _target_: flwr.server.strategy.FedAvg
+    fraction_fit: 1.0e-05
+    fraction_evaluate: 1.0e-06
+    min_fit_clients: ${clients_per_round}
+    min_available_clients: ${clients_per_round}
+    min_evaluate_clients: ${clients_per_round}

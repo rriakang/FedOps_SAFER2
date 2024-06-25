@@ -9,7 +9,8 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import MinMaxScaler
 import torch
-
+from torch.utils.data import DataLoader, TensorDataset
+import numpy as np
 #코드 정리는 나중에
 
 # set log format
@@ -22,8 +23,10 @@ logger = logging.getLogger(__name__)
 
 # 타겟 변수 변환
 def transform_target(df):
-    df['BPRS_change'] = (df['BPRS_sum'].diff().shift(-1) < 0).astype(int)
+    df = df.copy()
+    df.loc[:, 'BPRS_change'] = (df['BPRS_sum'].diff().shift(-1) < 0).astype(int)
     return df
+
 
 # 패딩 함수
 def pad_sequence(id_df, max_length, seq_cols):
@@ -121,7 +124,8 @@ def load_partition(dataset, validation_split, batch_size):
     patient_ids = data['이름'].unique()
     max_length = find_max_sequence_length_by_week(data,seq_cols)
     train_ids, test_ids = train_test_split(patient_ids, test_size=0.2, random_state=42)
-
+    train_data = data[data['이름'].isin(train_ids)]
+    test_data = data[data['이름'].isin(test_ids)]
     train_data = transform_target(train_data)
     test_data = transform_target(test_data)
 
@@ -141,7 +145,7 @@ def load_partition(dataset, validation_split, batch_size):
 
     # DataLoader for client training, validation, and test
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
-    val_loader = DataLoader(val_dataset, batch_size=batch_size)
+    val_loader = DataLoader(train_dataset, batch_size=batch_size)
     test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
     return train_loader, val_loader, test_loader
@@ -175,7 +179,8 @@ def gl_model_torch_validation(batch_size):
     patient_ids = data['이름'].unique()
     max_length = find_max_sequence_length_by_week(data,seq_cols)
     train_ids, test_ids = train_test_split(patient_ids, test_size=0.2, random_state=42)
-
+    train_data = data[data['이름'].isin(train_ids)]
+    test_data = data[data['이름'].isin(test_ids)]
     train_data = transform_target(train_data)
     test_data = transform_target(test_data)
 
@@ -184,7 +189,7 @@ def gl_model_torch_validation(batch_size):
     train_results = prepare_data_for_model_by_week(train_data, max_length, seq_cols, 'BPRS_change')
     test_results = prepare_data_for_model_by_week(test_data, max_length, seq_cols, 'BPRS_change')
 
-
+    
     X_train_tensor, y_train_tensor = convert_results_to_tensors(train_results)
     X_test_tensor, y_test_tensor = convert_results_to_tensors(test_results)
     train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
